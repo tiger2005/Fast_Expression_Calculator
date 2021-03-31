@@ -6,17 +6,25 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <sstream>
 
 std::string eval(std::string x){
-	std::string ret;
+	std::string ret="";
 	std::ofstream oup("calculator.py");
 	oup << ("fo = open(\"result.txt\", \"w\")\n");
+	for(int i=0;i<(int)x.size();i++)
+		if(x[i]=='\"')	ret+="\\\"";
+		else	ret+=x[i];
+	x=ret;
+	oup << ("import math\n");
 	oup << "fo.write(str(eval(\"" << x << "\")))\n";
 	oup << ("fo.close()");
 	oup.close();
 	system("python calculator.py");
 	std::ifstream red("result.txt");
-	red >> ret;
+	std::stringstream buffer;
+	buffer << red.rdbuf();
+	ret=buffer.str();
 	red.close();
 	system("rm calculator.py");
 	system("rm result.txt");
